@@ -23,7 +23,9 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
-     "lib/acts_as_ordinalized.rb"
+     "acts_as_ordinalized.gemspec",
+     "lib/acts_as_ordinalized.rb",
+     "test/test_ordinalized.rb"
   ]
   s.homepage = %q{http://github.com/mandaryn/acts_as_ordinalized}
   s.rdoc_options = ["--charset=UTF-8"]

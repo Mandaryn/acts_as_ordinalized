@@ -35,7 +35,7 @@ module ActsAsOrdinalized
     if collection_or_object.respond_to?(:current_page) && collection_or_object.respond_to?(:per_page)
       ordinal_base = (collection_or_object.current_page - 1) * collection_or_object.per_page + 1
     end
-    if collection_or_object.is_a?(Array)
+    if collection_or_object.respond_to?(:each_with_index)
       collection_or_object.each_with_index do |item, index|
         item.ordinal_number = ordinal_base + index
       end

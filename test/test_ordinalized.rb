@@ -46,6 +46,13 @@ class OrdinalTest < Test::Unit::TestCase
     even = Ordinal.all(:conditions => { :switch => true }, :order => "test_order ASC")
     assert_equal [[2,1], [4,2]], even.map{|o| [o.test_order, o.ordinal_number] }
   end
+
+  def test_nil_and_empty_results
+    empty = Ordinal.all(:conditions => ['test_order > 15'])
+    assert_equal [], empty
+    empty = Ordinal.last(:conditions => ['test_order > 15'])
+    assert_equal nil, empty
+  end
 end
 begin
 require 'will_paginate'

@@ -34,7 +34,7 @@ module ActsAsOrdinalized
       collection_or_object.each_with_index do |item, index|
         item.ordinal_number = ordinal_base + index
       end
-    else
+    elsif !collection_or_object.nil?
       collection_or_object.ordinal_number = ordinal_base
     end
     collection_or_object

@@ -15,10 +15,9 @@ module ActsAsOrdinalized
         def self.paginate(*args)
           ActsAsOrdinalized.ordinalize(super(*args))
         end
-      else
-        def self.find(*args)
-          ActsAsOrdinalized.ordinalize(super(*args))
-        end
+      end
+      def self.find(*args)
+        ActsAsOrdinalized.ordinalize(super(*args))
       end
     end
   end

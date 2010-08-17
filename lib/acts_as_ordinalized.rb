@@ -7,17 +7,22 @@ module ActsAsOrdinalized
   # each collection gets new ordinal numbers starting from one
   # paginated results should also get correct ordinal numbers on subsequent pages
   module ClassMethods
-    def acts_as_ordinalized
+    # Configuration options are:
+    #
+    # * +wrapped_methods+ - specifies additional classmethods that should be wrapped with functionality (basic are find and paginate)
+    def acts_as_ordinalized(options = {})
       attr_accessor :ordinal_number
+      wrapped_methods = ([:paginate, :find] << options[:wrapped_methods]).flatten.compact
 
-      #wrap find with function adding ordinal numbers to all returned models
-      if self.respond_to?(:paginate)
-        def self.paginate(*args)
-          ActsAsOrdinalized.ordinalize(super(*args))
+      #wrap various find methods with adding ordinal numbers to all returned models
+      wrapped_methods.each do |method_name|
+        if self.respond_to?(method_name)
+          class_eval <<-EOV
+            def self.#{method_name}(*args)
+              ActsAsOrdinalized.ordinalize(super(*args))
+            end
+          EOV
         end
-      end
-      def self.find(*args)
-        ActsAsOrdinalized.ordinalize(super(*args))
       end
     end
   end

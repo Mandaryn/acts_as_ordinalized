@@ -32,7 +32,7 @@ This is a simple acts_as gem providing the active record models with ordinal num
     end
 
     sphinx_collection = OrdinalizedWithSphinx.search
-    ordinalized_collection.first.ordinal_number
+    sphinx_collection.first.ordinal_number
     => 1
 
 === Note on Patches/Pull Requests

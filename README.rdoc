@@ -2,7 +2,40 @@
 
 This is a simple acts_as gem providing the active record models with ordinal numbers. The ordinals numbering is per query, but should work nicely with will paginate showing correct ordinal numbers on paginated results.
 
-== Note on Patches/Pull Requests
+=== Example
+
+* works with normal querries
+
+    class Ordinalized < ActiveRecord::Base
+      acts_as_ordinalized
+    end
+    ordinalized_collection = Ordinalized.all
+    ordinalized_collection.first.ordinal_number
+    => 1
+    ordinalized_collection[1].ordinal_number
+    => 2
+
+* works with will_paginate
+
+    paginated_collection = Ordinalized.paginate(:page => 2, :per_page => 10)
+    paginated_collection.first.ordinal_number
+    => 11
+
+* works with sphinx
+
+    class OrdinalizedWithSphinx < ActiveRecord::Base
+      define_index do
+        ...
+      end
+      # must be declared after indexes (the wrapped method must be defined before acts_as_ordinalized is used)
+      acts_as_ordinalized :wrapped_methods => :search
+    end
+
+    sphinx_collection = OrdinalizedWithSphinx.search
+    ordinalized_collection.first.ordinal_number
+    => 1
+
+=== Note on Patches/Pull Requests
  
 * Fork the project.
 * Make your feature addition or bug fix.
@@ -12,6 +45,6 @@ This is a simple acts_as gem providing the active record models with ordinal num
   (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
-== Copyright
+=== Copyright
 
 Copyright (c) 2010 mandaryn. See LICENSE for details.

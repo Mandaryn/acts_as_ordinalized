@@ -10,8 +10,8 @@ begin
     gem.email = "mandaryyyn@gmail.com"
     gem.homepage = "http://github.com/mandaryn/acts_as_ordinalized"
     gem.authors = ["mandaryn"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_development_dependency "will_paginate"
+    gem.add_development_dependency "rails", "~> 2.3.5"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

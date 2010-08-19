@@ -3,6 +3,8 @@ require 'test/unit'
 require 'rubygems'
 gem 'activerecord'
 require 'active_record'
+require 'will_paginate'
+WillPaginate.enable_activerecord
 
 require "#{File.dirname(__FILE__)}/../lib/acts_as_ordinalized"
 
@@ -13,6 +15,12 @@ def setup_db
     create_table :ordinals do |t|
       t.column :test_order, :integer
       t.column :switch, :boolean
+    end
+
+    create_table :more_ordinals do |t|
+      t.column :test_order, :integer
+      t.column :switch, :boolean
+      t.column :ordinal_id, :integer
     end
   end
 end
@@ -25,6 +33,7 @@ end
 
 class Ordinal < ActiveRecord::Base
   acts_as_ordinalized
+  has_many :more_ordinals
 end
 
 class OrdinalTest < Test::Unit::TestCase
@@ -54,14 +63,6 @@ class OrdinalTest < Test::Unit::TestCase
     assert_equal nil, empty
   end
 end
-begin
-require 'will_paginate'
-WillPaginate.enable_activerecord
-
-class OrdinalWithPagination < ActiveRecord::Base
-  acts_as_ordinalized
-  set_table_name "ordinals"
-end
 
 class OrdinalWithPaginationTest < Test::Unit::TestCase
 
@@ -75,12 +76,38 @@ class OrdinalWithPaginationTest < Test::Unit::TestCase
   end
 
   def test_ordinal_with_pagination
-    ordinals = OrdinalWithPagination.paginate(:page => 1, :per_page => 5, :order => "test_order ASC")
+    ordinals = Ordinal.paginate(:page => 1, :per_page => 5, :order => "test_order ASC")
     assert_equal [[1,1], [2,2], [3,3], [4,4], [5,5]], ordinals.map{|o| [o.test_order, o.ordinal_number] }
-    ordinals2 = OrdinalWithPagination.paginate(:page => 2, :per_page => 5, :order => "test_order ASC")
+    ordinals2 = Ordinal.paginate(:page => 2, :per_page => 5, :order => "test_order ASC")
     assert_equal [[6,6], [7,7], [8,8], [9,9], [10,10]], ordinals2.map{|o| [o.test_order, o.ordinal_number] }
   end
 
 end
-rescue
+
+class MoreOrdinal < ActiveRecord::Base
+  acts_as_ordinalized
+
+  named_scope :ordered, :order => "test_order ASC"
+end
+
+class OrdinalAssociationWithPaginationTest < Test::Unit::TestCase
+
+  def setup
+    setup_db
+    ordinal = Ordinal.create!(:test_order => 0)
+    (1..10).each { |counter| ordinal.more_ordinals.create!(:test_order => "#{counter}", :switch => counter.even?) }
+  end
+
+  def teardown
+    teardown_db
+  end
+
+  def test_ordinal_associations_with_pagination
+    ordinal = Ordinal.first
+    ordinals2 = ordinal.more_ordinals.ordered.paginate(:page => 2, :per_page => 5)
+    assert_equal [[6,6], [7,7], [8,8], [9,9], [10,10]], ordinals2.map{|o| [o.test_order, o.ordinal_number] }
+    ordinals = ordinal.more_ordinals.ordered.paginate(:page => 1, :per_page => 5)
+    assert_equal [[1,1], [2,2], [3,3], [4,4], [5,5]], ordinals.map{|o| [o.test_order, o.ordinal_number] }
+  end
+
 end

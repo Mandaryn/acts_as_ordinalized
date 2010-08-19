@@ -16,13 +16,11 @@ module ActsAsOrdinalized
 
       #wrap various find methods with adding ordinal numbers to all returned models
       wrapped_methods.each do |method_name|
-        if self.respond_to?(method_name)
-          class_eval <<-EOV
-            def self.#{method_name}(*args)
-              ActsAsOrdinalized.ordinalize(super(*args))
-            end
-          EOV
-        end
+        class_eval <<-EOV
+          def self.#{method_name}(*args)
+            ActsAsOrdinalized.ordinalize(super(*args))
+          end
+        EOV
       end
     end
   end
@@ -47,3 +45,5 @@ module ActsAsOrdinalized
 end
 
 ActiveRecord::Base.class_eval { include ActsAsOrdinalized }
+ActiveRecord::Associations::AssociationCollection.class_eval { undef_method(:paginate) }
+ActiveRecord::Associations::AssociationCollection.class_eval { alias_method :method_missing, :method_missing_without_paginate }

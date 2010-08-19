@@ -9,7 +9,7 @@ module ActsAsOrdinalized
   module ClassMethods
     # Configuration options are:
     #
-    # * +wrapped_methods+ - specifies additional classmethods that should be wrapped with functionality (basic are find and paginate)
+    # * +wrapped_methods+ - specifies additional class methods that should be wrapped with functionality (basic are find and paginate)
     def acts_as_ordinalized(options = {})
       attr_accessor :ordinal_number
       wrapped_methods = ([:paginate, :find] << options[:wrapped_methods]).flatten.compact
@@ -35,15 +35,28 @@ module ActsAsOrdinalized
     end
     if collection_or_object.respond_to?(:each_with_index)
       collection_or_object.each_with_index do |item, index|
-        item.ordinal_number = ordinal_base + index
+        item.ordinal_number = ordinal_base + index if item.respond_to?(:ordinal_number=)
       end
     elsif !collection_or_object.nil?
-      collection_or_object.ordinal_number = ordinal_base
+      collection_or_object.ordinal_number = ordinal_base if collection_or_object.respond_to?(:ordinal_number=)
     end
     collection_or_object
   end
 end
 
 ActiveRecord::Base.class_eval { include ActsAsOrdinalized }
-ActiveRecord::Associations::AssociationCollection.class_eval { undef_method(:paginate) }
-ActiveRecord::Associations::AssociationCollection.class_eval { alias_method :method_missing, :method_missing_without_paginate }
+
+#fix for will_paginate association collection with pagination
+a = ActiveRecord::Associations
+returning([ a::AssociationCollection ]) { |classes|
+  # detect http://dev.rubyonrails.org/changeset/9230
+  unless a::HasManyThroughAssociation.superclass == a::HasManyAssociation
+    classes << a::HasManyThroughAssociation
+  end
+}.each do |klass|
+  klass.class_eval do
+    def paginate(*args)
+      ActsAsOrdinalized.ordinalize(super(*args))
+    end
+  end
+end

@@ -48,7 +48,7 @@ ActiveRecord::Base.class_eval { include ActsAsOrdinalized }
 
 #fix for will_paginate association collection with pagination
 a = ActiveRecord::Associations
-returning([ a::AssociationCollection ]) { |classes|
+[ a::AssociationCollection ].tap { |classes|
   # detect http://dev.rubyonrails.org/changeset/9230
   unless a::HasManyThroughAssociation.superclass == a::HasManyAssociation
     classes << a::HasManyThroughAssociation

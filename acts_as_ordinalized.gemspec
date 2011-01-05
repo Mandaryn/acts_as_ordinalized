@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{acts_as_ordinalized}
-  s.version = "0.2.4"
+  s.version = "0.2.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["mandaryn"]
-  s.date = %q{2010-08-19}
+  s.date = %q{2011-01-05}
   s.description = %q{This is a simple acts_as gem providing the active record models with ordinal numbers. The ordinals numbering is per query, but should work nicely with will paginate showing correct ordinal numbers on paginated results.}
   s.email = %q{mandaryyyn@gmail.com}
   s.extra_rdoc_files = [

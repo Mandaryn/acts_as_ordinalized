@@ -24,11 +24,10 @@ This is a simple acts_as gem providing the active record models with ordinal num
 * works with sphinx
 
     class OrdinalizedWithSphinx < ActiveRecord::Base
+      acts_as_ordinalized :wrapped_methods => :search
       define_index do
         ...
       end
-      # must be declared after indexes (the wrapped method must be defined before acts_as_ordinalized is used)
-      acts_as_ordinalized :wrapped_methods => :search
     end
 
     sphinx_collection = OrdinalizedWithSphinx.search
